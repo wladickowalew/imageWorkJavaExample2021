@@ -1,5 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,17 +26,49 @@ class Window extends JFrame{
 
 class MyPanel extends JPanel{
 
-    public int x = 20, y = 20;
+    Timer timer;
+    DrawObject ball;
 
     public MyPanel(){
         setLayout(null);
+
+        ball = new DrawObject(20, 20, "Images//1.jpg");
+        timer = new Timer(20, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ball.x++;
+                ball.y+=2;
+                repaint();
+                if (ball.x == 420 || ball.y == 420)
+                    timer.stop();
+            }
+        });
+        timer.start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.red);
-        g.fillOval(x, y, 60, 60);
+        ball.draw(g);
+    }
+}
+
+class DrawObject{
+    public int x, y;
+    private BufferedImage image;
+
+    public DrawObject(int x, int y, String path) {
+        this.x = x;
+        this.y = y;
+        try {
+            this.image = ImageIO.read(new File(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void draw(Graphics g){
+        g.drawImage(image, x, y, 50, 50, null);
     }
 }
 
